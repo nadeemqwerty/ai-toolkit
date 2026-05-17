@@ -1,0 +1,11 @@
+{
+  "_comment": "Example repos configuration. Copy to ~/.ai-toolkit/workspace-repos.json",
+  "repos_root": "~/repos",
+  "repos": [
+    { "name": "backend-api", "lang": "Java" },
+    { "name": "frontend-app", "lang": "TypeScript" },
+    { "name": "data-pipeline", "lang": "Python" },
+    { "name": "infra", "lang": "Terraform" },
+    { "name": "docs", "lang": "Markdown" }
+  ]
+}

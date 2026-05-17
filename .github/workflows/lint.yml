@@ -1,0 +1,61 @@
+name: Lint & Validate
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Markdown link check
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          config-file: '.github/mlc_config.json'
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: '.'
+          severity: warning
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Python syntax check
+        run: python -m py_compile skills/code-heatmap/heatmap.py
+
+  powershell:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          $excludeRules = @(
+            'PSAvoidUsingWriteHost'        # Intentional for CLI scripts
+            'PSUseApprovedVerbs'           # Custom helper functions
+            'PSUseSingularNouns'           # Collection-returning functions
+            'PSReviewUnusedParameter'      # Params used via $PSBoundParameters/splatting
+          )
+          $scripts = @(Get-ChildItem -Path scripts -Filter *.ps1 -Recurse) + @(Get-Item -Path install.ps1 -ErrorAction SilentlyContinue)
+          $results = $scripts | ForEach-Object {
+            Invoke-ScriptAnalyzer -Path $_.FullName -Severity Warning -ExcludeRule $excludeRules
+          }
+          if ($results) {
+            $results | Format-Table -AutoSize
+            exit 1
+          }

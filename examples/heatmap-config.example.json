@@ -1,0 +1,53 @@
+{
+  "_comment": "Example service configuration for code-heatmap. Copy to ~/.ai-toolkit/heatmap-config.json and customize. Update service_filter values, endpoint patterns, node hints, and table names to match your environment.",
+  "services": {
+    "web-api": {
+      "web_requests": true,
+      "details_log": true,
+      "stack_traces": true,
+      "task_hosting": false,
+      "service_filter": "web-api",
+      "web_requests_table": "WebRequests",
+      "details_table": "ServiceDetails",
+      "endpoint_patterns": [
+        "/api/users",
+        "/api/orders",
+        "/api/health"
+      ],
+      "endpoint_node_hints": {
+        "/api/users": "UserController",
+        "/api/orders": "OrderController",
+        "/api/health": "HealthController"
+      }
+    },
+    "batch-job": {
+      "web_requests": false,
+      "details_log": true,
+      "stack_traces": true,
+      "task_hosting": true,
+      "service_filter": "batch-processor",
+      "scheduled": true,
+      "expected_cadence_hours": 1,
+      "details_table": "ServiceDetails",
+      "task_hosting_table": "TaskEvents"
+    },
+    "event-processor": {
+      "web_requests": false,
+      "details_log": true,
+      "stack_traces": true,
+      "task_hosting": true,
+      "service_filter": "event-handler",
+      "details_table": "ServiceDetails",
+      "task_hosting_table": "TaskEvents"
+    }
+  },
+  "kusto": {
+    "cluster": "https://your-cluster.region.kusto.windows.net",
+    "database": "your-database"
+  },
+  "tables": {
+    "web_requests": "WebRequests",
+    "details": "ServiceDetails",
+    "task_events": "TaskEvents"
+  }
+}

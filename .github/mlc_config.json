@@ -1,0 +1,9 @@
+{
+  "ignorePatterns": [
+    { "pattern": "^https://aka.ms" },
+    { "pattern": "badge.svg" }
+  ],
+  "timeout": "10000",
+  "retryOn429": true,
+  "aliveStatusCodes": [200, 206, 301, 302, 403]
+}
